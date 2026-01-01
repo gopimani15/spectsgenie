@@ -1,0 +1,138 @@
+version: "3.9"
+
+services:
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: spectsgenie-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - spectsgenie-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: spectsgenie-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - spectsgenie-net
+
+  auth-service:
+    build: ./auth-service
+    container_name: spectsgenie-auth
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8000:8000"
+    networks:
+      - spectsgenie-net
+
+  store-service:
+    build: ./store-service
+    container_name: spectsgenie-store
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8001:8000"
+    networks:
+      - spectsgenie-net
+
+  catalog-service:
+    build: ./catalog-service
+    container_name: spectsgenie-catalog
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8002:8000"
+    networks:
+      - spectsgenie-net
+
+  inventory-service:
+    build: ./inventory-service
+    container_name: spectsgenie-inventory
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8003:8000"
+    networks:
+      - spectsgenie-net
+
+  order-service:
+    build: ./order-service
+    container_name: spectsgenie-order
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8004:8000"
+    networks:
+      - spectsgenie-net
+
+  payment-service:
+    build: ./payment-service
+    container_name: spectsgenie-payment
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8005:8000"
+    networks:
+      - spectsgenie-net
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: spectsgenie-api-gateway
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8006:8000"
+    networks:
+      - spectsgenie-net
+
+  product-read-model-service:
+    build: ./product-read-model-service
+    container_name: spectsgenie-product-read-model
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8007:8000"
+    networks:
+      - spectsgenie-net
+
+  product-read-kafka-consumers:
+    build: ./product-read-kafka-consumers
+    container_name: spectsgenie-product-read-kafka-consumers
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    networks:
+      - spectsgenie-net
+    depends_on:
+      - kafka
+    # No ports exposed, runs as a background consumer
+
+volumes:
+  pg_data:
+
+networks:
+  spectsgenie-net:
+    driver: bridge
