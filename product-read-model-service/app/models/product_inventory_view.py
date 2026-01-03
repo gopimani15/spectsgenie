@@ -7,6 +7,7 @@ class ProductInventoryView(Base):
 
     product_id = Column(BigInteger, primary_key=True)
     store_id = Column(BigInteger, primary_key=True)
+    sku = Column(String(50))
     brand = Column(String(50))
     model = Column(String(50))
     price = Column(Numeric(10,2))

@@ -58,6 +58,7 @@ def process_product_update(event):
         
         product_id = event["product_id"]
         store_id = event["store_id"]
+        sku = event.get("sku") # Use get for backward compatibility
         brand = event["brand"]
         model = event["model"]
         price = event["price"]
@@ -70,10 +71,11 @@ def process_product_update(event):
         ).first()
 
         if not record:
-            logger.info(f"Creating new record - Product: {product_id}, Store: {store_id}, Brand: {brand}, Model: {model}")
+            logger.info(f"Creating new record - Product: {product_id}, Store: {store_id}, SKU: {sku}")
             record = ProductInventoryView(
                 product_id=product_id,
                 store_id=store_id,
+                sku=sku,
                 brand=brand,
                 model=model,
                 price=price,
@@ -82,6 +84,8 @@ def process_product_update(event):
             db.add(record)
         else:
             logger.info(f"Updating existing record - Product: {product_id}, Store: {store_id}")
+            if sku:
+                record.sku = sku
             record.brand = brand
             record.model = model
             record.price = price

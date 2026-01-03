@@ -7,7 +7,7 @@ export default function Inventory() {
   const [inventory, setInventory] = useState([]);
 
   useEffect(() => {
-    api.get("/inventory/1")
+    api.get("/read/store/1")
       .then(res => setInventory(res.data || []));
   }, []);
 
@@ -18,6 +18,9 @@ export default function Inventory() {
         <TableHead>
           <TableRow>
             <TableCell>Product ID</TableCell>
+            <TableCell>Brand</TableCell>
+            <TableCell>Model</TableCell>
+            <TableCell>Price</TableCell>
             <TableCell>Quantity</TableCell>
           </TableRow>
         </TableHead>
@@ -25,7 +28,10 @@ export default function Inventory() {
           {inventory.map(i => (
             <TableRow key={i.product_id}>
               <TableCell>{i.product_id}</TableCell>
-              <TableCell>{i.quantity}</TableCell>
+              <TableCell>{i.brand}</TableCell>
+              <TableCell>{i.model}</TableCell>
+              <TableCell>${i.price}</TableCell>
+              <TableCell>{i.available_quantity}</TableCell>
             </TableRow>
           ))}
         </TableBody>

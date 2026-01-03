@@ -2,7 +2,10 @@
 from pydantic import BaseModel
 from decimal import Decimal
 
+from typing import Optional
+
 class ProductCreate(BaseModel):
+    sku: Optional[str] = None
     product_type: str
     brand: str
     model: str

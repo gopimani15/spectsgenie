@@ -1,2 +1,2 @@
-import Login from "../src/pages/Login";
-export default Login;
+import StoreSelect from "../src/pages/StoreSelect";
+export default StoreSelect;

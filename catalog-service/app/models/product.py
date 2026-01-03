@@ -3,9 +3,10 @@ from sqlalchemy import Column, BigInteger, String, Numeric, Boolean
 from app.core.database import Base
 
 class Product(Base):
-    __tablename__ = "products"
+    __tablename__ = "product"
 
     product_id = Column(BigInteger, primary_key=True, index=True)
+    sku = Column(String(50), unique=True, index=True)
     product_type = Column(String(20))  # FRAME / LENS / ACCESSORY
     brand = Column(String(50))
     model = Column(String(50))

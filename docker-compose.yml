@@ -27,6 +27,11 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - spectsgenie-net
 
@@ -127,11 +132,24 @@ services:
     networks:
       - spectsgenie-net
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     # No ports exposed, runs as a background consumer
+
+  customer-service:
+    build: ./customer-service
+    container_name: spectsgenie-customer
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8008:8000"
+    networks:
+      - spectsgenie-net
 
 volumes:
   pg_data:
+
 
 networks:
   spectsgenie-net:
