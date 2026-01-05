@@ -4,10 +4,13 @@ from app.routes import auth, order, catalog, inventory, payment, prescription, p
 
 app = FastAPI(title="SpectsGenie API Gateway")
 
-# Enable CORS for all origins (for development)
+# Enable CORS for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

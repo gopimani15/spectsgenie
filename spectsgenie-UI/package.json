@@ -8,8 +8,10 @@
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
     "axios": "^1.6.0",
+    "jsbarcode": "^3.12.1",
     "next": "^16.1.1",
     "react": "^18.3.1",
+    "react-barcode-reader": "^0.0.2",
     "react-dom": "^18.3.1"
   },
   "scripts": {

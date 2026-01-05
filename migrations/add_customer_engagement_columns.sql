@@ -1,0 +1,8 @@
+SET search_path TO pos;
+
+-- Migration to add engagement stats to the customer table
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS total_visits BIGINT DEFAULT 0;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS total_spent BIGINT DEFAULT 0;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS last_visit TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS is_vip BOOLEAN DEFAULT FALSE;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;

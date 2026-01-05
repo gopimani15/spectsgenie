@@ -58,7 +58,8 @@ def process_product_update(event):
         
         product_id = event["product_id"]
         store_id = event["store_id"]
-        sku = event.get("sku") # Use get for backward compatibility
+        sku = event.get("sku")
+        barcode = event.get("barcode")
         brand = event["brand"]
         model = event["model"]
         price = event["price"]
@@ -76,6 +77,7 @@ def process_product_update(event):
                 product_id=product_id,
                 store_id=store_id,
                 sku=sku,
+                barcode=barcode,
                 brand=brand,
                 model=model,
                 price=price,
@@ -86,9 +88,14 @@ def process_product_update(event):
             logger.info(f"Updating existing record - Product: {product_id}, Store: {store_id}")
             if sku:
                 record.sku = sku
+            if barcode:
+                record.barcode = barcode
             record.brand = brand
             record.model = model
             record.price = price
+            
+            if "available_quantity" in event and event["available_quantity"] is not None:
+                record.available_quantity = event["available_quantity"]
 
         db.commit()
         logger.info(f"Successfully processed product update for product {product_id} at store {store_id}")

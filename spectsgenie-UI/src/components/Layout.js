@@ -48,7 +48,10 @@ export default function Layout({ children }) {
         { text: "Orders", icon: <ShoppingCartIcon />, path: "/orders" },
         { text: "Deliveries", icon: <LocalShippingIcon />, path: "/deliveries" },
         { text: "Inventory", icon: <InventoryIcon />, path: "/inventory" },
+        { text: "Products", icon: <AssessmentIcon />, path: "/product-management" },
     ];
+
+    const filteredMenuItems = menuItems;
 
     return (
         <Box sx={{ display: "flex", bgcolor: "#f5f7fa", minHeight: "100vh" }}>
@@ -75,7 +78,7 @@ export default function Layout({ children }) {
                 </Box>
 
                 <List sx={{ px: 2 }}>
-                    {menuItems.map((item) => (
+                    {filteredMenuItems.map((item) => (
                         <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
                             <ListItemButton
                                 onClick={() => router.push(item.path)}

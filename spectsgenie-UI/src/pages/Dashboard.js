@@ -10,7 +10,8 @@ export default function Dashboard() {
     <Container>
       <Typography variant="h4">Dashboard ({user?.role})</Typography>
       <Button href="/orders">Orders</Button>
-      {user?.role === "ADMIN" && <Button href="/inventory">Inventory</Button>}
+      <Button href="/inventory">Inventory</Button>
+      <Button href="/product-management">Products</Button>
       <Button color="error" onClick={logout}>Logout</Button>
     </Container>
   );

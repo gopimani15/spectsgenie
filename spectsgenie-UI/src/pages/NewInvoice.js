@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import api from "../api/axios";
+import BarcodeScannerComponent from "react-barcode-reader";
 import {
     Box,
     Grid,
@@ -16,13 +17,18 @@ import {
     Divider,
     Button,
     Card,
-    CardContent
+    CardContent,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddIcon from "@mui/icons-material/Add";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import QrCodeScannerIcon from "@mui/icons-material/QrCodeScanner";
 
 export default function NewInvoice() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -31,6 +37,8 @@ export default function NewInvoice() {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const [customerSearchTerm, setCustomerSearchTerm] = useState("");
     const [customerSearchResults, setCustomerSearchResults] = useState([]);
+    const [scannerOpen, setScannerOpen] = useState(false);
+    const [lastScannedCode, setLastScannedCode] = useState("");
 
     // Debounced search for customers
     useEffect(() => {
@@ -53,18 +61,12 @@ export default function NewInvoice() {
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             if (searchTerm.length > 2) {
-                // Assuming we can search by brand or model. Ideally backend supports search query.
-                // For now fetching store products and filtering client side as per previous task setup
                 const store = JSON.parse(localStorage.getItem("selectedStore"));
                 const storeId = store ? store.store_id || 1 : 1;
 
-                api.get(`/read/store/${storeId}`)
+                api.get(`/read/search?q=${encodeURIComponent(searchTerm)}&store_id=${storeId}`)
                     .then(res => {
-                        const filtered = res.data.filter(p =>
-                            p.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            p.model?.toLowerCase().includes(searchTerm.toLowerCase())
-                        );
-                        setSearchResults(filtered);
+                        setSearchResults(res.data || []);
                     })
                     .catch(err => console.error("Search failed", err));
             } else {
@@ -98,6 +100,41 @@ export default function NewInvoice() {
         setSelectedCustomer(customer);
         setCustomerSearchTerm("");
         setCustomerSearchResults([]);
+    };
+
+    const handleBarcodeScan = (barcode) => {
+        if (!barcode || barcode === lastScannedCode) return;
+
+        setLastScannedCode(barcode);
+        setScannerOpen(false);
+
+        // Search for product by barcode using the dedicated endpoint
+        const store = JSON.parse(localStorage.getItem("selectedStore"));
+        const storeId = store ? store.store_id || 1 : 1;
+
+        api.get(`/read/barcode/${encodeURIComponent(barcode)}?store_id=${storeId}`)
+            .then(res => {
+                if (res.data) {
+                    addToCart(res.data);
+                } else {
+                    alert(`No product found with barcode: ${barcode}`);
+                }
+            })
+            .catch(err => {
+                console.error("Barcode search failed", err);
+                if (err.response && err.response.status === 404) {
+                    alert(`No product found with barcode: ${barcode}`);
+                } else {
+                    alert("Failed to search for product");
+                }
+            });
+
+        // Reset last scanned code after 2 seconds to allow rescanning
+        setTimeout(() => setLastScannedCode(""), 2000);
+    };
+
+    const handleBarcodeError = (err) => {
+        console.error("Barcode scanner error:", err);
     };
 
     const subtotal = lineItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -166,17 +203,32 @@ export default function NewInvoice() {
                             <Typography variant="body2" color="text.secondary">{lineItems.length} items</Typography>
                         </Box>
 
-                        <TextField
-                            fullWidth
-                            placeholder="Search products..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            variant="outlined"
-                            InputProps={{
-                                startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>
-                            }}
-                            sx={{ mb: 3, "& .MuiOutlinedInput-root": { borderRadius: "8px" } }}
-                        />
+                        <Box sx={{ display: "flex", gap: 1, mb: 3 }}>
+                            <TextField
+                                fullWidth
+                                placeholder="Search products..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                variant="outlined"
+                                InputProps={{
+                                    startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>
+                                }}
+                                sx={{ "& .MuiOutlinedInput-root": { borderRadius: "8px" } }}
+                            />
+                            <IconButton
+                                onClick={() => setScannerOpen(true)}
+                                sx={{
+                                    bgcolor: "#00b894",
+                                    color: "white",
+                                    "&:hover": { bgcolor: "#00a180" },
+                                    borderRadius: "8px",
+                                    width: 56,
+                                    height: 56
+                                }}
+                            >
+                                <QrCodeScannerIcon />
+                            </IconButton>
+                        </Box>
 
                         {/* Search Results Dropdown (Simplified as a list) */}
                         {searchTerm && searchResults.length > 0 && (
@@ -288,6 +340,65 @@ export default function NewInvoice() {
                     </Grid>
                 </Grid>
             </Grid>
+
+            {/* Barcode Scanner Dialog */}
+            <Dialog
+                open={scannerOpen}
+                onClose={() => setScannerOpen(false)}
+                maxWidth="sm"
+                fullWidth
+            >
+                <DialogTitle>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <QrCodeScannerIcon color="primary" />
+                        <Typography variant="h6">Scan Barcode</Typography>
+                    </Box>
+                </DialogTitle>
+                <DialogContent>
+                    <Box sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        gap: 2,
+                        py: 2
+                    }}>
+                        <Typography variant="body2" color="text.secondary" textAlign="center">
+                            Position the barcode within the camera view
+                        </Typography>
+                        <Box sx={{
+                            width: "100%",
+                            minHeight: 300,
+                            bgcolor: "#f5f5f5",
+                            borderRadius: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            overflow: "hidden"
+                        }}>
+                            {scannerOpen && (
+                                <BarcodeScannerComponent
+                                    onUpdate={(err, result) => {
+                                        if (result) {
+                                            handleBarcodeScan(result.text);
+                                        }
+                                        if (err) {
+                                            handleBarcodeError(err);
+                                        }
+                                    }}
+                                />
+                            )}
+                        </Box>
+                        {lastScannedCode && (
+                            <Typography variant="body2" color="success.main">
+                                Last scanned: {lastScannedCode}
+                            </Typography>
+                        )}
+                    </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setScannerOpen(false)}>Close</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 }
