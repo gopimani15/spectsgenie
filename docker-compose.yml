@@ -147,6 +147,20 @@ services:
     networks:
       - spectsgenie-net
 
+  order-read-model-service:
+    build: ./order-read-model-service
+    container_name: spectsgenie-order-read-model-service
+    environment:
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dread_model_service
+      KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+    ports:
+      - "8009:8000"
+    networks:
+      - spectsgenie-net
+    depends_on:
+      kafka:
+        condition: service_healthy
+
 volumes:
   pg_data:
 

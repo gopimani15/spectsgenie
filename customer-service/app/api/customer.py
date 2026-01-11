@@ -64,6 +64,13 @@ def get_customers(
 
     return query.offset(skip).limit(limit).all()
 
+@router.get("/{customer_id}", response_model=CustomerResponse)
+def get_customer(customer_id: int, db: Session = Depends(get_db)):
+    db_customer = db.query(Customer).filter(Customer.customer_id == customer_id, Customer.is_active == True).first()
+    if not db_customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return db_customer
+
 @router.put("/{customer_id}", response_model=CustomerResponse)
 def update_customer(customer_id: int, customer: CustomerCreate, db: Session = Depends(get_db)):
     db_customer = db.query(Customer).filter(Customer.customer_id == customer_id).first()

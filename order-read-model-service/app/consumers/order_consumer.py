@@ -43,6 +43,9 @@ def consume_order_events():
         # Expect event to be a dict with all required fields
         upsert_order_read_model(event)
         print(f"Processed order event: {event.get('order_id')}")
+        import logging
+        logging.basicConfig(level=logging.INFO)
+        logging.info(f"Order event: {json.dumps(event)}")
 
 if __name__ == "__main__":
     consume_order_events()
