@@ -288,15 +288,6 @@ export default function ProductManagement() {
                             value={formData.barcode}
                             onChange={handleChange}
                         />
-                        <TextField
-                            label="Stock"
-                            name="available_quantity"
-                            type="number"
-                            fullWidth
-                            value={formData.available_quantity}
-                            onChange={handleChange}
-                            required
-                        />
                     </Box>
                 </DialogContent>
                 <DialogActions sx={{ px: 3, pb: 2 }}>

@@ -1,4 +1,3 @@
-
 from pydantic import BaseModel
 from decimal import Decimal
 from typing import List
@@ -13,6 +12,16 @@ class OrderCreate(BaseModel):
     customer_id: int
     items: List[OrderItemCreate]
 
+class OrderItemResponse(BaseModel):
+    order_item_id: int
+    order_id: int
+    product_id: int
+    quantity: int
+    price: Decimal
+
+    class Config:
+        from_attributes = True
+
 class OrderResponse(BaseModel):
     order_id: int
     store_id: int
@@ -21,4 +30,4 @@ class OrderResponse(BaseModel):
     total_amount: Decimal
 
     class Config:
-        orm_mode = True
+        from_attributes = True

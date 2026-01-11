@@ -39,7 +39,7 @@ services:
     build: ./auth-service
     container_name: spectsgenie-auth
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Duser_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8000:8000"
@@ -50,7 +50,7 @@ services:
     build: ./store-service
     container_name: spectsgenie-store
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dstore_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8001:8000"
@@ -61,7 +61,7 @@ services:
     build: ./catalog-service
     container_name: spectsgenie-catalog
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dcatalog_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8002:8000"
@@ -72,7 +72,7 @@ services:
     build: ./inventory-service
     container_name: spectsgenie-inventory
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dinventory_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8003:8000"
@@ -83,7 +83,7 @@ services:
     build: ./order-service
     container_name: spectsgenie-order
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dorder_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8004:8000"
@@ -94,7 +94,7 @@ services:
     build: ./payment-service
     container_name: spectsgenie-payment
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dpayment_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8005:8000"
@@ -105,7 +105,7 @@ services:
     build: ./api-gateway
     container_name: spectsgenie-api-gateway
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dpos
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8006:8000"
@@ -116,7 +116,7 @@ services:
     build: ./product-read-model-service
     container_name: spectsgenie-product-read-model
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dread_model_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8007:8000"
@@ -127,7 +127,7 @@ services:
     build: ./product-read-kafka-consumers
     container_name: spectsgenie-product-read-kafka-consumers
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dread_model_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     networks:
       - spectsgenie-net
@@ -140,7 +140,7 @@ services:
     build: ./customer-service
     container_name: spectsgenie-customer
     environment:
-      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/pos?options=-csearch_path%3Dpos
+      DATABASE_URL: postgresql://postgres:Mani%40789@host.docker.internal:5432/specsgenie?options=-csearch_path%3Dcustomer_service
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
     ports:
       - "8008:8000"

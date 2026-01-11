@@ -1,4 +1,3 @@
-
 from sqlalchemy.orm import Session
 from decimal import Decimal
 from app.models.order import Order
@@ -29,6 +28,9 @@ def create_order(db: Session, order):
 
 def get_order(db: Session, order_id: int):
     return db.query(Order).filter(Order.order_id == order_id).first()
+
+def get_orders(db: Session):
+    return db.query(Order).all()
 
 def mark_order_paid(db: Session, order_id: int):
     order = get_order(db, order_id)
